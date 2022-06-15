@@ -23,7 +23,8 @@ config :chuko, ChukoWeb.Endpoint,
   secret_key_base: "upz0EXUUq6FIAO+POP9F0T+lEixZRDO8NNWHq9n9oVCZ2XYF2dEKAPorVZgEv69D",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support
