@@ -17,7 +17,11 @@ defmodule ChukoWeb.Router do
   scope "/", ChukoWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    live_session :default do
+      live "/", PageLive, :index
+      live "/search", SearchLive, :redirect
+      live "/search/:query", SearchLive, :search
+    end
   end
 
   # Other scopes may use custom stacks.

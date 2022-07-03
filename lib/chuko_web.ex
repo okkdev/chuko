@@ -98,6 +98,8 @@ defmodule ChukoWeb do
       import ChukoWeb.ErrorHelpers
       import ChukoWeb.Gettext
       alias ChukoWeb.Router.Helpers, as: Routes
+
+      use PetalComponents
     end
   end
 
