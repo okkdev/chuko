@@ -5,7 +5,7 @@ defmodule ChukoWeb.PageLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container max-w-xl mx-auto flex items-center justify-center h-screen">
+    <div class="container flex items-center justify-center h-screen max-w-xl mx-auto">
       <.live_component module={SearchInput} id={:search} />
     </div>
     """
@@ -17,8 +17,7 @@ defmodule ChukoWeb.PageLive do
   end
 
   @impl true
-  def handle_info({:search, query}, socket) do
-    # {:noreply, push_redirect(socket, to: Routes.search_path(socket, :search, query))}
-    {:noreply, socket}
+  def handle_event("search", %{"query" => query}, socket) do
+    {:noreply, push_redirect(socket, to: Routes.search_path(socket, :search, query))}
   end
 end

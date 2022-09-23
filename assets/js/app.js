@@ -21,16 +21,12 @@ import "phoenix_html"
 import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
-import LocalstorageHook from "./hooks/localstorage-hook"
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
-  hooks: {
-    LocalstorageHook,
-  },
 })
 
 // Show progress bar on live navigation and form submits
