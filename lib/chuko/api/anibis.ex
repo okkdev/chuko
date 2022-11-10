@@ -37,7 +37,6 @@ defmodule Chuko.Api.Anibis do
       |> then(fn %Req.Response{body: body} -> body["listings"] end)
     end)
     |> Stream.flat_map(fn {:ok, res} -> res end)
-    |> IO.inspect()
     |> Enum.map(&cast_item/1)
   end
 

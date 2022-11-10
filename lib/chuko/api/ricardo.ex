@@ -9,31 +9,32 @@ defmodule Chuko.Api.Ricardo do
   @impl true
   def search(query) when is_binary(query) do
     options = [
-      params: [],
+      params: [
+        page: 1
+      ],
       headers: [
         user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:5.0) Gecko/20131221 Firefox/36.0"
       ]
     ]
 
-    pages = ceil(get_amount(query) / 60)
+    amount =
+      (@url_api <> query)
+      |> URI.encode()
+      |> Req.get!()
+      |> then(fn %Req.Response{body: body} -> body["totalArticlesCount"] end)
+
+    pages = ceil(amount / 60)
 
     1..pages
     |> Task.async_stream(fn page ->
       (@url_api <> query)
       |> URI.encode()
-      |> Req.get!(Keyword.put(options, :params, page: page))
+      |> Req.get!(put_in(options[:params][:page], page))
       |> then(fn %Req.Response{body: body} -> body["results"] end)
     end)
     |> Stream.flat_map(fn {:ok, res} -> res end)
     |> Stream.filter(&(&1["isPromo"] == false))
     |> Enum.map(&cast_item/1)
-  end
-
-  defp get_amount(query) do
-    (@url_api <> query)
-    |> URI.encode()
-    |> Req.get!()
-    |> then(fn %Req.Response{body: body} -> body["totalArticlesCount"] end)
   end
 
   defp cast_item(json) do

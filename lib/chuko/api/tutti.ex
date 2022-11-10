@@ -12,7 +12,10 @@ defmodule Chuko.Api.Tutti do
     options = [
       params: [
         q: query,
+        # page
         o: 1,
+        # type offer
+        st: "s",
         limit: 3000,
         with_all_regions: true,
         with_neighbouring_regions: false
