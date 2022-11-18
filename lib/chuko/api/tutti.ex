@@ -1,4 +1,8 @@
 defmodule Chuko.Api.Tutti do
+  @moduledoc """
+  DEPRECATED
+  Should switch to the new GraphQL API sometime
+  """
   @behaviour Chuko.Api.Platform
 
   @url_image "https://c.tutti.ch/images/"
@@ -13,9 +17,10 @@ defmodule Chuko.Api.Tutti do
       params: [
         q: query,
         # page
-        o: 1,
+        # o: 1,
         # type offer
         st: "s",
+        # limited to 3000 even when switching pages
         limit: 3000,
         with_all_regions: true,
         with_neighbouring_regions: false
@@ -23,23 +28,14 @@ defmodule Chuko.Api.Tutti do
       headers: [
         user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:5.0) Gecko/20131221 Firefox/36.0",
         "x-tutti-hash": Ecto.UUID.generate()
-      ]
+      ],
+      max_retries: 2,
+      cache: true
     ]
 
-    amount =
-      @url_api
-      |> Req.get!(put_in(options[:params][:limit], 1))
-      |> then(fn %Req.Response{body: body} -> body["search_total"] end)
-
-    pages = ceil(amount / 3000)
-
-    1..pages
-    |> Task.async_stream(fn page ->
-      @url_api
-      |> Req.get!(put_in(options[:params][:o], page))
-      |> then(fn %Req.Response{body: body} -> body["items"] end)
-    end)
-    |> Stream.flat_map(fn {:ok, res} -> res end)
+    @url_api
+    |> Req.get!(options)
+    |> then(fn %Req.Response{body: body} -> body["items"] end)
     |> Enum.map(&cast_item/1)
   end
 

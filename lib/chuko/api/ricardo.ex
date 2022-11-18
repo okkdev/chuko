@@ -14,24 +14,31 @@ defmodule Chuko.Api.Ricardo do
       ],
       headers: [
         user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:5.0) Gecko/20131221 Firefox/36.0"
-      ]
+      ],
+      max_retries: 2,
+      cache: true
     ]
 
-    amount =
-      (@url_api <> query)
-      |> URI.encode()
-      |> Req.get!()
-      |> then(fn %Req.Response{body: body} -> body["totalArticlesCount"] end)
+    # amount =
+    #   (@url_api <> query)
+    #   |> URI.encode()
+    #   |> Req.get!()
+    #   |> then(fn %Req.Response{body: body} -> body["totalArticlesCount"] end)
 
-    pages = ceil(amount / 60)
+    # pages = ceil(amount / 60)
+    # |> IO.inspect(label: "Ricardo Pages")
+    pages = 1
 
     1..pages
-    |> Task.async_stream(fn page ->
-      (@url_api <> query)
-      |> URI.encode()
-      |> Req.get!(put_in(options[:params][:page], page))
-      |> then(fn %Req.Response{body: body} -> body["results"] end)
-    end)
+    |> Task.async_stream(
+      fn page ->
+        (@url_api <> query)
+        |> URI.encode()
+        |> Req.get!(put_in(options[:params][:page], page))
+        |> then(fn %Req.Response{body: body} -> body["results"] end)
+      end,
+      timeout: 300_000
+    )
     |> Stream.flat_map(fn {:ok, res} -> res end)
     |> Stream.filter(&(&1["isPromo"] == false))
     |> Enum.map(&cast_item/1)

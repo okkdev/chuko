@@ -20,7 +20,9 @@ defmodule Chuko.Api.Anibis do
       ],
       headers: [
         user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:5.0) Gecko/20131221 Firefox/36.0"
-      ]
+      ],
+      max_retries: 2,
+      cache: true
     ]
 
     amount =
@@ -31,11 +33,14 @@ defmodule Chuko.Api.Anibis do
     pages = ceil(amount / 120)
 
     1..pages
-    |> Task.async_stream(fn page ->
-      @url_api
-      |> Req.get!(put_in(options[:params][:pi], page))
-      |> then(fn %Req.Response{body: body} -> body["listings"] end)
-    end)
+    |> Task.async_stream(
+      fn page ->
+        @url_api
+        |> Req.get!(put_in(options[:params][:pi], page))
+        |> then(fn %Req.Response{body: body} -> body["listings"] end)
+      end,
+      timeout: 300_000
+    )
     |> Stream.flat_map(fn {:ok, res} -> res end)
     |> Enum.map(&cast_item/1)
   end

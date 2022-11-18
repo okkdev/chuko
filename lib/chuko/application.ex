@@ -17,9 +17,10 @@ defmodule Chuko.Application do
       # Start Finch
       {Finch, name: Chuko.Finch},
       # Start the Endpoint (http/https)
-      ChukoWeb.Endpoint
+      ChukoWeb.Endpoint,
       # Start a worker by calling: Chuko.Worker.start_link(arg)
       # {Chuko.Worker, arg}
+      {Task.Supervisor, name: Chuko.SearchSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
