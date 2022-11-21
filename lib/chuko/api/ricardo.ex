@@ -13,7 +13,7 @@ defmodule Chuko.Api.Ricardo do
         page: 1
       ],
       headers: [
-        user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:5.0) Gecko/20131221 Firefox/36.0"
+        user_agent: Chuko.AgentUser.get()
       ],
       max_retries: 2,
       cache: true

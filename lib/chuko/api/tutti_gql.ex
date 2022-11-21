@@ -281,7 +281,7 @@ defmodule Chuko.Api.TuttiGql do
         }
       },
       headers: [
-        user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:5.0) Gecko/20131221 Firefox/36.0",
+        user_agent: Chuko.AgentUser.get(),
         "Content-Type": "application/json",
         # let's see how long this works
         "x-tutti-client-identifier": "web/1337.69+please-dont-block-me-uwu"
@@ -322,7 +322,7 @@ defmodule Chuko.Api.TuttiGql do
       currency: "CHF",
       price: parse_price(json["formattedPrice"]),
       offer_type: :buynow,
-      images: Enum.map(json["images"], & &1["rendition"]["src"]),
+      images: parse_images(json["images"]),
       url: @url_item <> json["seoInformation"]["deSlug"],
       location: json["postcodeInformation"]["canton"]["name"],
       platform: Tutti,
@@ -340,4 +340,7 @@ defmodule Chuko.Api.TuttiGql do
       :error -> 0.0
     end
   end
+
+  defp parse_images(images) when is_list(images), do: Enum.map(images, & &1["rendition"]["src"])
+  defp parse_images(_), do: []
 end
