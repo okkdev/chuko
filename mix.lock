@@ -1,4 +1,5 @@
 %{
+  "absinthe_client": {:hex, :absinthe_client, "0.1.0", "a3bafc1dff141073a2a7fd926942fb10afb4d45295f0b6df46f6f1955ececaac", [:mix], [{:castore, ">= 0.0.0", [hex: :castore, repo: "hexpm", optional: false]}, {:req, "~> 0.3.0", [hex: :req, repo: "hexpm", optional: false]}, {:slipstream, "~> 1.0", [hex: :slipstream, repo: "hexpm", optional: false]}], "hexpm", "a7ec3e13da9b463cb024dba4733c2fa31a0690a3bfa897b9df6bdd544a4d6f91"},
   "castore": {:hex, :castore, "0.1.18", "deb5b9ab02400561b6f5708f3e7660fc35ca2d51bfc6a940d2f513f89c2975fc", [:mix], [], "hexpm", "61bbaf6452b782ef80b33cdb45701afbcf0a918a45ebe7e73f1130d661e66a06"},
   "connection": {:hex, :connection, "1.1.0", "ff2a49c4b75b6fb3e674bfc5536451607270aac754ffd1bdfe175abe4a6d7a68", [:mix], [], "hexpm", "722c1eb0a418fbe91ba7bd59a47e28008a189d47e37e0e7bb85585a016b2869c"},
   "cowboy": {:hex, :cowboy, "2.9.0", "865dd8b6607e14cf03282e10e934023a1bd8be6f6bacf921a7e2a96d800cd452", [:make, :rebar3], [{:cowlib, "2.11.0", [hex: :cowlib, repo: "hexpm", optional: false]}, {:ranch, "1.8.0", [hex: :ranch, repo: "hexpm", optional: false]}], "hexpm", "2c729f934b4e1aa149aff882f57c6372c15399a20d54f65c8d67bef583021bde"},
