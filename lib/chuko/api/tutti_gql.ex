@@ -1,16 +1,10 @@
 defmodule Chuko.Api.TuttiGql do
   @moduledoc """
-  Unfinished GraphQL Tutti API client.
+  The new GraphQL API
+  """
+  @behaviour Chuko.Api.Platform
 
-  # Some notes:
-  url:
-  `https://www.tutti.ch/api/v10/graphql`
-
-  needed header:
-  `x-tutti-client-identifier: web/1337.69+please-dont-block-me`
-
-  This is the query:
-  ```
+  @query """
   query SearchListings($query: String, $constraints: ListingSearchConstraints, $category: ID, $first: Int!, $offset: Int!, $sort: ListingSortMode!, $direction: SortDirection!) {
     searchListingsByQuery(
       query: $query
@@ -92,7 +86,9 @@ defmodule Chuko.Api.TuttiGql do
       }
     }
     images(first: 15) {
-      __typename
+      rendition {
+        src
+      }
     }
     thumbnail {
       normalRendition: rendition(width: 235, height: 167) {
@@ -261,19 +257,87 @@ defmodule Chuko.Api.TuttiGql do
       }
     }
   }
-  ```
-
-  Here are the variables:
-  ```
-  {
-    "query": "nintendo",
-    "constraints": null,
-    "category": null,
-    "first": 100,
-    "offset": 3000,
-    "direction": "DESCENDING",
-    "sort": "TIMESTAMP"
-  }
-  ```
   """
+
+  @url_item "https://www.tutti.ch/de/vi/"
+  @url_api "https://www.tutti.ch/api/v10/graphql"
+
+  alias Chuko.Structs.Item
+
+  @impl true
+  def search(query) when is_binary(query) do
+    options = [
+      json: %{
+        query: @query,
+        variables: %{
+          query: query,
+          constraints: nil,
+          category: nil,
+          first: 100,
+          # max 3000
+          offset: 0,
+          direction: "DESCENDING",
+          sort: "TIMESTAMP"
+        }
+      },
+      headers: [
+        user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:5.0) Gecko/20131221 Firefox/36.0",
+        "Content-Type": "application/json",
+        # let's see how long this works
+        "x-tutti-client-identifier": "web/1337.69+please-dont-block-me-uwu"
+      ],
+      max_retries: 2,
+      cache: true
+    ]
+
+    # could be optimized by using the body
+    amount =
+      Req.post!(@url_api, put_in(options[:json][:variables][:first], 1))
+      |> then(fn %Req.Response{body: body} ->
+        body["data"]["searchListingsByQuery"]["listings"]["totalCount"]
+      end)
+      |> then(&if &1 > 3000, do: 3000, else: &1)
+
+    0..floor(amount / 100)
+    |> Enum.map(&(&1 * 100))
+    |> Task.async_stream(
+      fn offset ->
+        Req.post!(@url_api, put_in(options[:json][:variables][:offset], offset))
+        |> then(fn %Req.Response{body: body} ->
+          body["data"]["searchListingsByQuery"]["listings"]["edges"]
+        end)
+      end,
+      timeout: 300_000
+    )
+    |> Stream.flat_map(fn {:ok, res} -> List.wrap(res) end)
+    |> Enum.filter(&(not is_nil(&1)))
+    |> Enum.map(&cast_item(&1["node"]))
+  end
+
+  defp cast_item(json) do
+    %Item{
+      id: json["listingID"],
+      name: json["title"],
+      description: json["body"],
+      currency: "CHF",
+      price: parse_price(json["formattedPrice"]),
+      offer_type: :buynow,
+      images: Enum.map(json["images"], & &1["rendition"]["src"]),
+      url: @url_item <> json["seoInformation"]["deSlug"],
+      location: json["postcodeInformation"]["canton"]["name"],
+      platform: Tutti,
+      created_at: DateTime.from_iso8601(json["timestamp"]) |> then(fn {:ok, dt, _} -> dt end)
+    }
+  end
+
+  defp parse_price(string) do
+    string
+    |> String.trim()
+    |> String.replace("'", "")
+    |> Integer.parse()
+    |> case do
+      {price, _} -> price / 1
+      :error -> 0.0
+    end
+  end
 end
