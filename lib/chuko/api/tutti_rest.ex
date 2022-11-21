@@ -1,7 +1,6 @@
-defmodule Chuko.Api.Tutti do
+defmodule Chuko.Api.TuttiRest do
   @moduledoc """
   DEPRECATED
-  Should switch to the new GraphQL API sometime
   """
   @behaviour Chuko.Api.Platform
 
