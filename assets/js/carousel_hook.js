@@ -1,17 +1,20 @@
 // This shit is cursed I just didn't think of another way using hooks
 export default Carousel = {
-  carouselData() {
-    return this.el.dataset
+  carouselPage() {
+    return Number(this.el.dataset.carouselPage)
+  },
+  carouselPages() {
+    return Number(this.el.dataset.carouselPages)
   },
   nextIndex() {
-    this.carouselData().carouselPage =
-      (this.carouselData().carouselPage + 1) % this.carouselData().carouselPages
-    return this.carouselData().carouselPage
+    this.el.dataset.carouselPage =
+      (this.carouselPage() + 1) % this.carouselPages()
+    return this.carouselPage()
   },
   prevIndex() {
-    this.carouselData().carouselPage =
-      (this.carouselData().carouselPage - 1) % this.carouselData().carouselPages
-    return this.carouselData().carouselPage
+    this.el.dataset.carouselPage =
+      (this.carouselPage() + this.carouselPages() - 1) % this.carouselPages()
+    return this.carouselPage()
   },
   images() {
     return this.el.querySelector(".carousel-body")
@@ -27,7 +30,6 @@ export default Carousel = {
     this.toggleDot(n)
   },
   toggleDot(n) {
-    console.log("toggle dot " + n)
     this.dots()
       .querySelector(":scope > :not(.opacity-30)")
       .classList.toggle("opacity-30")
