@@ -56,7 +56,8 @@ defmodule Chuko.Api.Anibis do
       images: format_image_urls(json["imageData"]["baseUrl"], json["imageData"]["images"]),
       url: @url_item <> json["staticUrl"],
       location: Enum.join(json["detailsMainSmall"]),
-      platform: Anibis,
+      platform: :anibis,
+      platform_logo: "/images/anibis_logo.png",
       created_at: parse_datetime(Enum.fetch!(json["detailsMainLarge"], 2))
     }
   end

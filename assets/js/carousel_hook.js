@@ -17,10 +17,10 @@ export default Carousel = {
     return this.carouselPage()
   },
   images() {
-    return this.el.querySelector(".carousel-body")
+    return this.el.querySelector("[data-carousel-body]")
   },
   dots() {
-    return this.el.querySelector(".slide-indicators")
+    return this.el.querySelector("[data-slide-indicators]")
   },
   toggleImage(n) {
     this.images()
@@ -38,11 +38,15 @@ export default Carousel = {
   mounted() {
     this.images().firstElementChild.classList.toggle("hidden")
     this.dots().firstElementChild.classList.toggle("opacity-30")
-    this.el.querySelector(".carousel-next").addEventListener("click", () => {
-      this.toggleImage(this.nextIndex())
-    })
-    this.el.querySelector(".carousel-prev").addEventListener("click", () => {
-      this.toggleImage(this.prevIndex())
-    })
+    this.el
+      .querySelector("[data-carousel-next]")
+      .addEventListener("click", () => {
+        this.toggleImage(this.nextIndex())
+      })
+    this.el
+      .querySelector("[data-carousel-prev]")
+      .addEventListener("click", () => {
+        this.toggleImage(this.prevIndex())
+      })
   },
 }

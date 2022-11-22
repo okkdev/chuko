@@ -323,9 +323,10 @@ defmodule Chuko.Api.TuttiGql do
       price: parse_price(json["formattedPrice"]),
       offer_type: :buynow,
       images: parse_images(json["images"]),
-      url: @url_item <> json["seoInformation"]["deSlug"],
+      url: "#{@url_item}#{json["seoInformation"]["deSlug"]}/#{json["listingID"]}",
       location: json["postcodeInformation"]["canton"]["name"],
-      platform: Tutti,
+      platform: :tutti,
+      platform_logo: "/images/tutti_logo.svg",
       created_at: DateTime.from_iso8601(json["timestamp"]) |> then(fn {:ok, dt, _} -> dt end)
     }
   end

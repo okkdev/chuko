@@ -10,6 +10,7 @@ defmodule Chuko.Structs.Item do
     :url,
     :location,
     :platform,
+    :platform_logo,
     :created_at
   ]
 end

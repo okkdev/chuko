@@ -48,14 +48,15 @@ defmodule Chuko.Api.Ricardo do
     %Item{
       id: json["id"],
       name: json["title"],
-      description: json["title"],
+      description: "Open the Ricardo offer to read the description...",
       currency: "CHF",
       price: parse_price(json),
       offer_type: parse_offer_type(json),
       images: format_image_url(json["image"]),
       url: "#{@url_item}#{json["id"]}",
       location: "CH",
-      platform: Ricardo,
+      platform: :ricardo,
+      platform_logo: "/images/ricardo_logo.svg",
       created_at: parse_datetime(json["startDate"])
     }
   end

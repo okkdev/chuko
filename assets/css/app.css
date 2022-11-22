@@ -3,3 +3,32 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+html {
+  @apply min-h-screen bg-gradient-to-br from-sky-50 to-pink-50;
+}
+
+@font-face {
+  font-family: "Gluten Black";
+  src: local("Gluten Black"), url("/fonts/Gluten-Black.woff2") format("woff2");
+}
+
+.font-gluten {
+  font-family: "Gluten Black";
+}
+
+.ani-tracking {
+  animation-duration: 2s;
+  animation-name: ani-tracking;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+}
+@keyframes ani-tracking {
+  0% {
+    letter-spacing: -1.2rem;
+  }
+  100% {
+    letter-spacing: 0.8rem;
+  }
+}
