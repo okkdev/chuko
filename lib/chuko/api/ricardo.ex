@@ -16,8 +16,8 @@ defmodule Chuko.Api.Ricardo do
       headers: [
         user_agent: Chuko.AgentUser.get()
       ],
-      max_retries: 2,
-      cache: true
+      max_retries: 2
+      # cache: true
     ]
 
     amount =

@@ -287,8 +287,8 @@ defmodule Chuko.Api.TuttiGql do
         # let's see how long this works
         "x-tutti-client-identifier": "web/1337.69+please-dont-block-me-uwu"
       ],
-      max_retries: 2,
-      cache: true
+      max_retries: 2
+      # cache: true
     ]
 
     # could be optimized by using the body
