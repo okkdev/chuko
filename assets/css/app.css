@@ -18,7 +18,7 @@ html {
 }
 
 .ani-tracking {
-  animation-duration: 2s;
+  animation-duration: 4s;
   animation-name: ani-tracking;
   animation-iteration-count: infinite;
   animation-direction: alternate;
@@ -29,6 +29,6 @@ html {
     letter-spacing: -1.2rem;
   }
   100% {
-    letter-spacing: 0.8rem;
+    letter-spacing: 0.5rem;
   }
 }
