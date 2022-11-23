@@ -1,5 +1,6 @@
 defmodule Chuko.Api.Anibis do
   @behaviour Chuko.Api.Platform
+  require Logger
 
   @url_item "https://www.anibis.ch"
   @url_api "https://api.anibis.ch/v4/de/search/listings"
@@ -7,7 +8,7 @@ defmodule Chuko.Api.Anibis do
   alias Chuko.Structs.Item
 
   @impl true
-  def search(query) when is_binary(query) do
+  def search(query, session_id) when is_binary(query) do
     options = [
       params: [
         cun: "alle-kategorien",
@@ -43,15 +44,26 @@ defmodule Chuko.Api.Anibis do
     )
     |> Stream.flat_map(fn {:ok, res} -> res end)
     |> Enum.map(&cast_item/1)
+  rescue
+    err ->
+      Logger.error(Exception.format(:error, err, __STACKTRACE__))
+
+      Phoenix.PubSub.broadcast!(
+        Chuko.PubSub,
+        session_id,
+        {:search_failed, %{platform: "Anibis"}}
+      )
+
+      []
   end
 
   defp cast_item(json) do
     %Item{
-      id: json["id"],
+      id: "anibis-#{json["id"]}",
       name: json["title"],
       description: Enum.join(json["detailsExtraLarge"]),
       currency: "CHF",
-      price: json["price"],
+      price: parse_price(json["price"]),
       offer_type: :buynow,
       images: format_image_urls(json["imageData"]["baseUrl"], json["imageData"]["images"]),
       url: @url_item <> json["staticUrl"],
@@ -69,6 +81,9 @@ defmodule Chuko.Api.Anibis do
   defp format_image_urls(_, _) do
     []
   end
+
+  defp parse_price(nil), do: 0.0
+  defp parse_price(price), do: price / 1
 
   defp parse_datetime(date) do
     date

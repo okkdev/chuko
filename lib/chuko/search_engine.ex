@@ -11,7 +11,7 @@ defmodule Chuko.SearchEngine do
         platforms,
         fn platform ->
           Module.safe_concat([Chuko.Api, platform])
-          |> Platform.search(query)
+          |> Platform.search(query, session_id)
         end,
         timeout: 300_000
       )
@@ -21,7 +21,7 @@ defmodule Chuko.SearchEngine do
     Phoenix.PubSub.broadcast!(
       Chuko.PubSub,
       session_id,
-      {:items_ready, %{items: items}}
+      {:items_found, %{items: items}}
     )
   end
 end

@@ -1,5 +1,6 @@
 defmodule Chuko.Api.Ricardo do
   @behaviour Chuko.Api.Platform
+  require Logger
 
   @url_item "https://www.ricardo.ch/de/a/"
   @url_api "https://www.ricardo.ch/api/mfa/search/"
@@ -7,7 +8,7 @@ defmodule Chuko.Api.Ricardo do
   alias Chuko.Structs.Item
 
   @impl true
-  def search(query) when is_binary(query) do
+  def search(query, session_id) when is_binary(query) do
     options = [
       params: [
         page: 1
@@ -19,15 +20,13 @@ defmodule Chuko.Api.Ricardo do
       cache: true
     ]
 
-    # amount =
-    #   (@url_api <> query)
-    #   |> URI.encode()
-    #   |> Req.get!()
-    #   |> then(fn %Req.Response{body: body} -> body["totalArticlesCount"] end)
+    amount =
+      (@url_api <> query)
+      |> URI.encode()
+      |> Req.get!()
+      |> then(fn %Req.Response{body: body} -> body["totalArticlesCount"] end)
 
-    # pages = ceil(amount / 60)
-    # |> IO.inspect(label: "Ricardo Pages")
-    pages = 1
+    pages = ceil(amount / 60)
 
     1..pages
     |> Task.async_stream(
@@ -42,11 +41,22 @@ defmodule Chuko.Api.Ricardo do
     |> Stream.flat_map(fn {:ok, res} -> res end)
     |> Stream.filter(&(&1["isPromo"] == false))
     |> Enum.map(&cast_item/1)
+  rescue
+    err ->
+      Logger.error(Exception.format(:error, err, __STACKTRACE__))
+
+      Phoenix.PubSub.broadcast!(
+        Chuko.PubSub,
+        session_id,
+        {:search_failed, %{platform: "Ricardo"}}
+      )
+
+      []
   end
 
   defp cast_item(json) do
     %Item{
-      id: json["id"],
+      id: "ricardo-#{json["id"]}",
       name: json["title"],
       description: "Open the Ricardo offer to read the description...",
       currency: "CHF",

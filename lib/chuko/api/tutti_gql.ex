@@ -3,6 +3,7 @@ defmodule Chuko.Api.TuttiGql do
   The new GraphQL API
   """
   @behaviour Chuko.Api.Platform
+  require Logger
 
   @query """
   query SearchListings($query: String, $constraints: ListingSearchConstraints, $category: ID, $first: Int!, $offset: Int!, $sort: ListingSortMode!, $direction: SortDirection!) {
@@ -265,7 +266,7 @@ defmodule Chuko.Api.TuttiGql do
   alias Chuko.Structs.Item
 
   @impl true
-  def search(query) when is_binary(query) do
+  def search(query, session_id) when is_binary(query) do
     options = [
       json: %{
         query: @query,
@@ -312,11 +313,22 @@ defmodule Chuko.Api.TuttiGql do
     |> Stream.flat_map(fn {:ok, res} -> List.wrap(res) end)
     |> Enum.filter(&(not is_nil(&1)))
     |> Enum.map(&cast_item(&1["node"]))
+  rescue
+    err ->
+      Logger.error(Exception.format(:error, err, __STACKTRACE__))
+
+      Phoenix.PubSub.broadcast!(
+        Chuko.PubSub,
+        session_id,
+        {:search_failed, %{platform: "Tutti"}}
+      )
+
+      []
   end
 
   defp cast_item(json) do
     %Item{
-      id: json["listingID"],
+      id: "tutti-#{json["listingID"]}",
       name: json["title"],
       description: json["body"],
       currency: "CHF",

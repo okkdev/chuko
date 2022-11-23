@@ -7,6 +7,15 @@ defmodule ChukoWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <div class="container mx-auto">
+      <%!-- Scroll top button --%>
+      <button
+        id="scrolltop"
+        phx-hook="ScrollTop"
+        class="hidden fixed rounded-full bg-white m-4 p-3 bottom-0 right-0 shadow-lg z-50"
+      >
+        <Heroicons.chevron_up class="text-pink-300 h-8 w-8" />
+      </button>
+      <%!-- logo --%>
       <div class="drop-shadow-xl">
         <div
           style="filter:url('#goo');"
@@ -30,24 +39,53 @@ defmodule ChukoWeb.HomeLive do
           </defs>
         </svg>
       </div>
-      <div class="max-w-2xl mx-auto">
-        <.search_bar query={@query} phx-submit="search" disabled={@loading} />
+      <%!-- Search bar --%>
+      <div class="max-w-2xl mx-auto space-y-3">
+        <.search_bar query={@query} phx-submit="search" disabled={@searching} />
       </div>
-      <div class="max-w-2xl px-4 py-13 mx-auto sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
+      <%!-- Product body --%>
+      <div class="max-w-2xl px-4 py-8 mx-auto sm:py-12 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 class="sr-only">Products</h2>
-        <%= if @loading do %>
-          <div class="flex items-center justify-center">
-            <Heroicons.arrow_path class="text-gray-400 w-20 h-20 animate-spin" />
-          </div>
-        <% else %>
-          <div
-            id="infinite-scroll-body"
-            phx-update="append"
-            class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8"
-          >
-            <.item :for={item <- @page_items} item={item} />
-          </div>
-          <div id="infinite-scroll-marker" phx-hook="InfiniteScroll" data-page={@page}></div>
+        <%= cond do %>
+          <% @searching -> %>
+            <.loading />
+          <% @query == "" && @items == [] -> %>
+            <div class="text-center py-16">
+              try searching something :^)
+            </div>
+          <% @query != "" && @items == [] -> %>
+            <div class="text-center py-16">
+              nothing found...
+            </div>
+          <% true -> %>
+            <%!-- Filters/Sorting --%>
+            <div class="mb-5 flex justify-end">
+              <form id="sorting" phx-change="sort" phx-update="ignore">
+                <select
+                  name="sorting"
+                  phx-change="sort"
+                  class="shadow-xl text-gray-700 block rounded-xl py-3 pl-3 pr-10 text-base border-0 transition-colors ring-1 ring-black ring-opacity-5 focus:border-pink-300 focus:outline-none focus:ring-pink-300 sm:text-sm"
+                >
+                  <option value="new" selected>↑ Newest first</option>
+                  <option value="old">↓ Oldest first</option>
+                  <option value="low">↑ Price lowest first</option>
+                  <option value="high">↓ Price highest first</option>
+                </select>
+              </form>
+            </div>
+            <%!-- Actual product container --%>
+            <%= if @sorting do %>
+              <.loading />
+            <% else %>
+              <div
+                id="infinite-scroll-body"
+                phx-update="append"
+                class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8"
+              >
+                <.item :for={item <- @page_items} item={item} />
+              </div>
+              <div id="infinite-scroll-marker" phx-hook="InfiniteScroll" data-page={@page}></div>
+            <% end %>
         <% end %>
       </div>
     </div>
@@ -62,7 +100,8 @@ defmodule ChukoWeb.HomeLive do
         items: [],
         page: 1,
         pages: 0,
-        loading: false
+        searching: false,
+        sorting: false
       )
 
     if connected?(socket) do
@@ -84,7 +123,7 @@ defmodule ChukoWeb.HomeLive do
 
   @impl true
   def handle_event(
-        "load-more",
+        "load_more",
         _,
         %{assigns: %{items: items, page: page, pages: pages}} = socket
       )
@@ -100,8 +139,39 @@ defmodule ChukoWeb.HomeLive do
   end
 
   @impl true
-  def handle_event("load-more", _, socket) do
+  def handle_event("load_more", _, socket) do
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("sort", %{"sorting" => sort_type}, %{assigns: %{items: items}} = socket) do
+    Task.async(fn ->
+      items = List.flatten(items)
+
+      items =
+        case sort_type do
+          "new" ->
+            Enum.sort_by(items, & &1.created_at, {:desc, DateTime})
+
+          "old" ->
+            Enum.sort_by(items, & &1.created_at, {:asc, DateTime})
+
+          "low" ->
+            Enum.sort_by(items, & &1.price, :asc)
+
+          "high" ->
+            Enum.sort_by(items, & &1.price, :desc)
+        end
+        |> Enum.chunk_every(9)
+
+      Phoenix.PubSub.broadcast!(
+        Chuko.PubSub,
+        "session_#{socket.id}",
+        {:items_sorted, %{items: items}}
+      )
+    end)
+
+    {:noreply, assign(socket, sorting: true)}
   end
 
   @impl true
@@ -110,7 +180,20 @@ defmodule ChukoWeb.HomeLive do
   end
 
   @impl true
-  def handle_info({:items_ready, %{items: items}}, socket) do
+  def handle_info({:items_sorted, %{items: items}}, socket) do
+    socket =
+      assign(socket,
+        items: items,
+        page_items: Enum.at(items, 0, []),
+        page: 1,
+        sorting: false
+      )
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:items_found, %{items: items}}, socket) do
     items =
       items
       |> Enum.sort_by(& &1.created_at, {:desc, DateTime})
@@ -120,11 +203,17 @@ defmodule ChukoWeb.HomeLive do
       assign(socket,
         items: items,
         page_items: Enum.at(items, 0, []),
+        page: 1,
         pages: Enum.count(items),
-        loading: false
+        searching: false
       )
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:search_failed, %{platform: platform}}, socket) do
+    {:noreply, put_flash(socket, :error, "Searching #{platform} failed. Try again...")}
   end
 
   @impl true
@@ -133,6 +222,6 @@ defmodule ChukoWeb.HomeLive do
   defp search(query, socket) do
     Task.async(fn -> SearchEngine.search_platforms(query, "session_#{socket.id}") end)
 
-    assign(socket, query: query, page_title: query, loading: true)
+    assign(socket, query: query, page_title: query, searching: true)
   end
 end
