@@ -25,19 +25,19 @@ export default Carousel = {
   toggleImage(n) {
     this.images()
       .querySelector(":scope > :not(.hidden)")
-      .classList.toggle("hidden")
-    this.images().children[n].classList.toggle("hidden")
+      .classList.add("hidden")
+    this.images().children[n].classList.remove("hidden")
     this.toggleDot(n)
   },
   toggleDot(n) {
     this.dots()
       .querySelector(":scope > :not(.opacity-30)")
-      .classList.toggle("opacity-30")
-    this.dots().children[n].classList.toggle("opacity-30")
+      .classList.add("opacity-30")
+    this.dots().children[n].classList.remove("opacity-30")
   },
   mounted() {
-    this.images().firstElementChild.classList.toggle("hidden")
-    this.dots().firstElementChild.classList.toggle("opacity-30")
+    this.images().firstElementChild.classList.remove("hidden")
+    this.dots().firstElementChild.classList.remove("opacity-30")
     this.el
       .querySelector("[data-carousel-next]")
       .addEventListener("click", () => {
