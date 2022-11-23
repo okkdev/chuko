@@ -23,12 +23,13 @@ import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import InfiniteScroll from "./infinite_scroll_hook"
 import Carousel from "./carousel_hook"
+import ScrollTop from "./scroll_top_hook"
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
-  hooks: { InfiniteScroll, Carousel },
+  hooks: { InfiniteScroll, Carousel, ScrollTop },
   params: { _csrf_token: csrfToken },
 })
 
