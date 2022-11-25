@@ -31,7 +31,10 @@ defmodule Chuko.Api.Anibis do
       |> Req.get!(put_in(options[:params][:ps], 1))
       |> then(fn %Req.Response{body: body} -> body["pagingInfo"]["totalItems"] end)
 
-    pages = ceil(amount / 120)
+    pages =
+      ceil(amount / 120)
+      # Capping for rate limit reasons
+      |> then(&if &1 > 5, do: 5, else: &1)
 
     1..pages
     |> Task.async_stream(

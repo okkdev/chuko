@@ -26,7 +26,10 @@ defmodule Chuko.Api.Ricardo do
       |> Req.get!()
       |> then(fn %Req.Response{body: body} -> body["totalArticlesCount"] end)
 
-    pages = ceil(amount / 60)
+    pages =
+      ceil(amount / 60)
+      # Capping for rate limit reasons
+      |> then(&if &1 > 10, do: 10, else: &1)
 
     1..pages
     |> Task.async_stream(

@@ -297,7 +297,8 @@ defmodule Chuko.Api.TuttiGql do
       |> then(fn %Req.Response{body: body} ->
         body["data"]["searchListingsByQuery"]["listings"]["totalCount"]
       end)
-      |> then(&if &1 > 3000, do: 3000, else: &1)
+      # Max is 3000 but capping at 500 for rate limit reasons
+      |> then(&if &1 > 500, do: 500, else: &1)
 
     0..floor(amount / 100)
     |> Enum.map(&(&1 * 100))
