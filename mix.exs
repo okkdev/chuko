@@ -51,8 +51,7 @@ defmodule Chuko.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:req, "~> 0.3.0"},
-      {:petal_components, "~> 0.18"}
+      {:req, "~> 0.3.0"}
     ]
   end
 
