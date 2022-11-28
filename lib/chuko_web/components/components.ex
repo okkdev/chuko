@@ -7,7 +7,7 @@ defmodule ChukoWeb.Components do
       id={"item-#{@item.id}"}
       class="relative flex flex-col overflow-hidden bg-white border border-gray-200 rounded-lg shadow-xl group"
     >
-      <div class="overflow-hidden rounded-lg shadow-sm aspect-w-3 h-96">
+      <div class="overflow-hidden rounded-lg shadow-md aspect-w-3 h-96">
         <%= case Enum.count(@item.images) do %>
           <% 0 -> %>
             <div class="flex items-center justify-center h-full">
@@ -76,7 +76,7 @@ defmodule ChukoWeb.Components do
         />
         <input
           type="text"
-          class="w-full h-12 pr-4 text-gray-800 placeholder-gray-400 bg-transparent border-0 pl-11 rounded-xl ring-1 ring-black ring-opacity-5 focus:border-pink-300 focus:outline-none focus:ring-pink-300 sm:text-sm "
+          class="w-full h-12 pr-4 text-gray-800 placeholder-gray-400 bg-transparent border-0 pl-11 rounded-xl ring-1 ring-black ring-opacity-5 focus:border-pink-300 focus:outline-none focus:ring-pink-300"
           placeholder="Search..."
           name="query"
           id="query"
@@ -125,7 +125,7 @@ defmodule ChukoWeb.Components do
           class="flex items-center justify-start w-full h-full px-5 transition cursor-pointer group focus:outline-none hover:bg-white/20"
           data-carousel-prev
         >
-          <Heroicons.chevron_left class="w-5 h-5 text-white sm:w-6 sm:h-6" />
+          <Heroicons.chevron_left class="w-5 h-5 text-white sm:w-6 sm:h-6 drop-shadow" />
           <span class="sr-only">Previous</span>
         </button>
         <button
@@ -133,7 +133,7 @@ defmodule ChukoWeb.Components do
           class="flex items-center justify-end w-full h-full px-5 transition cursor-pointer group focus:outline-none hover:bg-white/20"
           data-carousel-next
         >
-          <Heroicons.chevron_right class="w-5 h-5 text-white sm:w-6 sm:h-6" />
+          <Heroicons.chevron_right class="w-5 h-5 text-white sm:w-6 sm:h-6 drop-shadow" />
           <span class="sr-only">Next</span>
         </button>
       </div>
