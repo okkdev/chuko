@@ -11,15 +11,15 @@ defmodule ChukoWeb.HomeLive do
       <button
         id="scrolltop"
         phx-hook="ScrollTop"
-        class="hidden fixed rounded-full bg-white m-4 p-3 bottom-0 right-0 shadow-lg z-50"
+        class="fixed bottom-0 right-0 z-50 hidden p-3 m-4 bg-white rounded-full shadow-lg ring-1 ring-black ring-opacity-5"
       >
-        <Heroicons.chevron_up class="text-pink-300 h-8 w-8" />
+        <Heroicons.chevron_up class="w-8 h-8 text-pink-300" />
       </button>
       <%!-- logo --%>
       <div class="drop-shadow-xl">
         <div
           style="filter:url('#goo');"
-          class="font-gluten ani-tracking text-7xl text-pink-300  text-center py-8"
+          class="py-8 text-center text-pink-300 font-gluten ani-tracking text-7xl"
         >
           chuko
         </div>
@@ -50,21 +50,21 @@ defmodule ChukoWeb.HomeLive do
           <% @searching -> %>
             <.loading />
           <% @query == "" && @items == [] -> %>
-            <div class="text-center py-16">
+            <div class="py-16 text-center">
               try searching something :^)
             </div>
           <% @query != "" && @items == [] -> %>
-            <div class="text-center py-16">
+            <div class="py-16 text-center">
               nothing found...
             </div>
           <% true -> %>
             <%!-- Filters/Sorting --%>
-            <div class="mb-5 flex justify-end">
+            <div class="flex justify-end mb-5">
               <form id="sorting" phx-change="sort" phx-update="ignore">
                 <select
                   name="sorting"
                   phx-change="sort"
-                  class="shadow-xl text-gray-700 block rounded-xl py-3 pl-3 pr-10 text-base border-0 transition-colors ring-1 ring-black ring-opacity-5 focus:border-pink-300 focus:outline-none focus:ring-pink-300 sm:text-sm"
+                  class="block py-3 pl-3 pr-10 text-base text-gray-700 transition-colors border-0 shadow-xl rounded-xl ring-1 ring-black ring-opacity-5 focus:border-pink-300 focus:outline-none focus:ring-pink-300 sm:text-sm"
                 >
                   <option value="new" selected>↑ Newest first</option>
                   <option value="old">↓ Oldest first</option>
