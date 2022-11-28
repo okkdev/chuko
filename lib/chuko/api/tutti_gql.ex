@@ -284,8 +284,7 @@ defmodule Chuko.Api.TuttiGql do
       headers: [
         user_agent: Chuko.AgentUser.get(),
         "Content-Type": "application/json",
-        # let's see how long this works
-        "x-tutti-client-identifier": "web/1337.69+please-dont-block-me-uwu"
+        "x-tutti-client-identifier": "web/1.0.0+env-live.git-a70218e"
       ],
       max_retries: 2
       # cache: true
