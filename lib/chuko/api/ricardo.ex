@@ -60,7 +60,7 @@ defmodule Chuko.Api.Ricardo do
     %Item{
       id: "ricardo-#{json["id"]}",
       name: json["title"],
-      description: "Open the Ricardo offer to read the description...",
+      description: "Open the Ricardo listing to read the description...",
       currency: "CHF",
       price: parse_price(json),
       offer_type: parse_offer_type(json),

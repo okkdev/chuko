@@ -46,7 +46,7 @@ defmodule ChukoWeb.Components do
                 Auction
             <% end %>
           </p>
-          <img class="w-2/3" src={@item.platform_logo} alt={inspect(@item.platform)} />
+          <img class="max-h-6" src={@item.platform_logo} alt={to_string(@item.platform)} />
           <p class="items-center text-base font-medium text-right text-gray-900">
             <%= "#{@item.currency}" %>
             <span class="text-xl font-bold">

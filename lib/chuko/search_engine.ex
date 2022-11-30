@@ -1,7 +1,7 @@
 defmodule Chuko.SearchEngine do
   alias Chuko.Api.Platform
 
-  @platforms [TuttiGql, Anibis, Ricardo]
+  @platforms [TuttiGql, Anibis, Ricardo, FacebookMarketplace]
 
   def search_platforms(query, session_id, platforms \\ @platforms)
       when is_binary(query) and is_list(platforms) do
