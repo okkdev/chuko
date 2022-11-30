@@ -1,7 +1,6 @@
 # Chuko
 
 Todo:
-- Cache dir
 - Search subscriptions
 
 To start your Phoenix server:

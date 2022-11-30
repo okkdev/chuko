@@ -287,7 +287,6 @@ defmodule Chuko.Api.TuttiGql do
         "x-tutti-client-identifier": "web/1.0.0+env-live.git-a70218e"
       ],
       max_retries: 2
-      # cache: true
     ]
 
     # could be optimized by using the body
