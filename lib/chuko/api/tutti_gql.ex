@@ -284,7 +284,8 @@ defmodule Chuko.Api.TuttiGql do
       headers: [
         user_agent: Chuko.AgentUser.get(),
         "Content-Type": "application/json",
-        "x-tutti-client-identifier": "web/1.0.0+env-live.git-a70218e"
+        "x-tutti-client-identifier": "web/1.0.0+env-live.git-a70218e",
+        "x-tutti-hash": Ecto.UUID.generate()
       ],
       max_retries: 2
     ]
