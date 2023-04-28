@@ -68,7 +68,7 @@ defmodule ChukoWeb.Components do
 
   def search_bar(assigns) do
     ~H"""
-    <form class="w-full transform bg-white divide-y divide-gray-100 shadow-xl rounded-xl" {@rest}>
+    <form class="w-full transform bg-white divide-y divide-gray-100 shadow-lg rounded-xl" {@rest}>
       <div class="relative">
         <Heroicons.magnifying_glass
           solid
