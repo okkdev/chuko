@@ -45,7 +45,8 @@ defmodule Chuko.Api.Anibis do
       timeout: 300_000
     )
     |> Stream.flat_map(fn {:ok, res} -> res end)
-    |> Enum.map(&cast_item/1)
+    |> Stream.map(&cast_item/1)
+    |> Enum.to_list()
   rescue
     err ->
       Logger.error(Exception.format(:error, err, __STACKTRACE__))
@@ -80,9 +81,8 @@ defmodule Chuko.Api.Anibis do
     Enum.map(urls, &(base_url <> String.replace(&1, "[size]", "1024x768/3/60")))
   end
 
-  defp format_image_urls(_, _) do
-    []
-  end
+  defp format_image_urls(nil, urls) when is_list(urls), do: urls
+  defp format_image_urls(_, _), do: []
 
   defp parse_price(nil), do: 0.0
   defp parse_price(price), do: price / 1
