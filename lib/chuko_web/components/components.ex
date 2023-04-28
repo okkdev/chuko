@@ -4,7 +4,7 @@ defmodule ChukoWeb.Components do
   def item(assigns) do
     ~H"""
     <div
-      id={"item-#{@item.id}"}
+      id={@id}
       class="relative flex flex-col overflow-hidden bg-white border border-gray-200 rounded-lg shadow-xl group"
     >
       <div class="overflow-hidden rounded-lg shadow-md aspect-w-3 h-96">

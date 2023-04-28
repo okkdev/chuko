@@ -39,7 +39,7 @@ defmodule ChukoWeb.HomeLive do
             <.loading />
           <% @query == "" && @items == [] -> %>
             <div class="py-16 text-center">
-              try searching something 🕵️
+              search something 🕵️
             </div>
           <% @query != "" && @items == [] -> %>
             <div class="py-16 text-center">
@@ -61,18 +61,19 @@ defmodule ChukoWeb.HomeLive do
                 </select>
               </form>
             </div>
+          <% :otherwise -> %>
             <%!-- Actual product container --%>
-            <%= if @sorting do %>
-              <.loading />
-            <% else %>
+            <%= unless @sorting do %>
               <div
                 id="infinite-scroll-body"
-                phx-update="append"
+                phx-update="stream"
                 class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8"
               >
-                <.item :for={item <- @page_items} item={item} />
+                <.item :for={{id, item} <- @streams.page_items} item={item} id={id} />
               </div>
               <div id="infinite-scroll-marker" phx-hook="InfiniteScroll" data-page={@page}></div>
+            <% else %>
+              <.loading />
             <% end %>
         <% end %>
       </div>
@@ -83,7 +84,8 @@ defmodule ChukoWeb.HomeLive do
   @impl true
   def mount(_params, _session, socket) do
     socket =
-      assign(socket,
+      socket
+      |> assign(
         query: "",
         items: [],
         page: 1,
@@ -91,12 +93,13 @@ defmodule ChukoWeb.HomeLive do
         searching: false,
         sorting: false
       )
+      |> stream(:page_items, [], dom_id: &"item-#{&1.id}")
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Chuko.PubSub, "session_#{socket.id}")
     end
 
-    {:ok, socket, temporary_assigns: [page_items: []]}
+    {:ok, socket}
   end
 
   @impl true
@@ -117,11 +120,12 @@ defmodule ChukoWeb.HomeLive do
       )
       when page < pages do
     socket =
-      assign(socket,
+      socket
+      |> assign(
         items: items,
-        page_items: Enum.at(items, page, []),
         page: page + 1
       )
+      |> insert_page_items(Enum.at(items, page, []))
 
     {:noreply, socket}
   end
@@ -170,12 +174,13 @@ defmodule ChukoWeb.HomeLive do
   @impl true
   def handle_info({:items_sorted, %{items: items}}, socket) do
     socket =
-      assign(socket,
+      socket
+      |> assign(
         items: items,
-        page_items: Enum.at(items, 0, []),
         page: 1,
         sorting: false
       )
+      |> insert_page_items(Enum.at(items, 0, []))
 
     {:noreply, socket}
   end
@@ -188,13 +193,15 @@ defmodule ChukoWeb.HomeLive do
       |> Enum.chunk_every(9)
 
     socket =
-      assign(socket,
+      socket
+      |> assign(
         items: items,
         page_items: Enum.at(items, 0, []),
         page: 1,
         pages: Enum.count(items),
         searching: false
       )
+      |> insert_page_items(Enum.at(items, 0, []))
 
     {:noreply, socket}
   end
@@ -211,5 +218,9 @@ defmodule ChukoWeb.HomeLive do
     Task.async(fn -> SearchEngine.search_platforms(query, "session_#{socket.id}") end)
 
     assign(socket, query: query, page_title: query, searching: true)
+  end
+
+  defp insert_page_items(socket, pages) do
+    Enum.reduce(pages, socket, &stream_insert(&2, :page_items, &1))
   end
 end
