@@ -308,7 +308,7 @@ defmodule Chuko.Api.TuttiGql do
           body["data"]["searchListingsByQuery"]["listings"]["edges"]
         end)
       end,
-      timeout: 300_000
+      timeout: 30_000
     )
     |> Stream.flat_map(fn {:ok, res} -> List.wrap(res) end)
     |> Enum.filter(&(not is_nil(&1)))

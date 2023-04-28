@@ -38,7 +38,7 @@ defmodule Chuko.Api.Ricardo do
         |> Req.get!(put_in(options[:params][:page], page))
         |> then(fn %Req.Response{body: body} -> body["results"] end)
       end,
-      timeout: 300_000
+      timeout: 30_000
     )
     |> Stream.flat_map(fn {:ok, res} -> res end)
     |> Stream.filter(&(&1["isPromo"] == false))

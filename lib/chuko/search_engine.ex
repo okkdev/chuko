@@ -13,7 +13,7 @@ defmodule Chuko.SearchEngine do
           Module.safe_concat([Chuko.Api, platform])
           |> Platform.search(query, session_id)
         end,
-        timeout: 300_000
+        timeout: 30_000
       )
       |> Stream.filter(&(elem(&1, 0) == :ok))
       |> Enum.flat_map(fn {:ok, res} -> res end)

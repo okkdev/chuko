@@ -42,7 +42,7 @@ defmodule Chuko.Api.Anibis do
         |> Req.get!(put_in(options[:params][:pi], page))
         |> then(fn %Req.Response{body: body} -> body["listings"] end)
       end,
-      timeout: 300_000
+      timeout: 30_000
     )
     |> Stream.flat_map(fn {:ok, res} -> res end)
     |> Stream.map(&cast_item/1)
