@@ -23,41 +23,41 @@ defmodule ChukoWeb.Components do
             <.carousel item={@item} />
         <% end %>
       </div>
-      <div class="flex flex-col justify-between p-4 space-y-2 h-60">
-        <div class="space-y-0.5">
-          <h3 class="text-base font-medium text-gray-900 line-clamp-2">
-            <a href={@item.url} target="_blank">
+      <a href={@item.url} target="_blank">
+        <div class="flex flex-col justify-between p-4 space-y-2 h-60">
+          <div class="space-y-0.5">
+            <h3 class="text-base font-medium text-gray-900 line-clamp-2">
               <%= @item.name %>
-            </a>
-          </h3>
-          <p class="text-sm text-gray-500 line-clamp-3">
-            <%= @item.description %>
-          </p>
-        </div>
-        <div class="grid grid-cols-2 gap-1">
-          <p class="text-gray-900">
-            <%= @item.location %>
-          </p>
-          <p class="text-base font-medium text-right text-gray-900">
-            <%= case @item.offer_type do %>
-              <% :buynow -> %>
-                Buy now
-              <% :auction -> %>
-                Auction
-            <% end %>
-          </p>
-          <img class="w-2/3" src={@item.platform_logo} alt={inspect(@item.platform)} />
-          <p class="items-center text-base font-medium text-right text-gray-900">
-            <%= "#{@item.currency}" %>
-            <span class="text-xl font-bold">
-              <%= "#{:erlang.float_to_binary(@item.price, decimals: 2)}" %>
-            </span>
-          </p>
-          <div class="col-span-2 text-xs text-center text-gray-500">
-            <%= format_datetime(@item.created_at) %>
+            </h3>
+            <p class="text-sm text-gray-500 line-clamp-3">
+              <%= @item.description %>
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-1">
+            <p class="text-gray-900">
+              <%= @item.location %>
+            </p>
+            <p class="text-base font-medium text-right text-gray-900">
+              <%= case @item.offer_type do %>
+                <% :buynow -> %>
+                  Buy now
+                <% :auction -> %>
+                  Auction
+              <% end %>
+            </p>
+            <img class="w-2/3" src={@item.platform_logo} alt={inspect(@item.platform)} />
+            <p class="items-center text-base font-medium text-right text-gray-900">
+              <%= "#{@item.currency}" %>
+              <span class="text-xl font-bold">
+                <%= "#{:erlang.float_to_binary(@item.price, decimals: 2)}" %>
+              </span>
+            </p>
+            <div class="col-span-2 text-xs text-center text-gray-500">
+              <%= format_datetime(@item.created_at) %>
+            </div>
           </div>
         </div>
-      </div>
+      </a>
     </div>
     """
   end
