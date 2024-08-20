@@ -1,4 +1,7 @@
 defmodule Chuko.Api.Anibis do
+  @moduledoc """
+  Deprecated in favor of AnibisGql
+  """
   @behaviour Chuko.Api.Platform
   require Logger
 
