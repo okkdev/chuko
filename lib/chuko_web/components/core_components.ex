@@ -12,7 +12,7 @@ defmodule ChukoWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import ChukoWeb.Gettext
+  use Gettext, backend: Chuko.Gettext
 
   @doc """
   Renders a modal.
