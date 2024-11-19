@@ -36,7 +36,7 @@ defmodule Chuko.Api.Ricardo do
         (@url_api <> query)
         |> URI.encode()
         |> Req.get!(put_in(options[:params][:page], page))
-        |> then(fn %Req.Response{body: body} -> body["results"] end)
+        |> then(fn %Req.Response{body: body} -> body["articles"] end)
       end,
       timeout: 30_000
     )
