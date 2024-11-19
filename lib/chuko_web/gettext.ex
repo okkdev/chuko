@@ -5,7 +5,7 @@ defmodule ChukoWeb.Gettext do
   By using [Gettext](https://hexdocs.pm/gettext),
   your module gains a set of macros for translations, for example:
 
-      import ChukoWeb.Gettext
+      use Gettext, backend: ChukoWeb.Gettext
 
       # Simple translation
       gettext("Here is the string to translate")

@@ -44,7 +44,7 @@ defmodule ChukoWeb do
         layouts: [html: ChukoWeb.Layouts]
 
       import Plug.Conn
-      import ChukoWeb.Gettext
+      use Gettext, backend: ChukoWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -86,7 +86,7 @@ defmodule ChukoWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import ChukoWeb.CoreComponents
-      import ChukoWeb.Gettext
+      use Gettext, backend: ChukoWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
